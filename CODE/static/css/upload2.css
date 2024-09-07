@@ -1,0 +1,93 @@
+.form-group{
+    margin-top: 20px;
+}
+
+#id_name{
+        border: 2px solid black;
+        border-radius: 0;
+    }
+    #id_filter_actors, #id_filter_tags{
+        border: none;
+    }
+    label{
+        font-weight: 505;
+        font-size: 18px;
+    }
+
+    #uploadForm{
+        padding: 5px;
+        font-size: x-large;
+        margin: 10px;
+        width: 100%;
+    }
+    .filter-div{
+        display: flex;
+        justify-content: space-between;
+        width: 90%;
+        border: 2px solid black;
+        padding: 3px;
+    }
+
+    .create-button{
+        background-color: #ccc;
+        display: none;border-radius: 5px;
+    }
+
+    .submit-button{
+        padding: 10px;
+        background-color: blue;
+        color: white;
+        font-size: 18px;
+        border-radius: 5px;
+        min-width: 150px;
+        font-weight: 400;
+    }
+    .selected{
+        font-size: 15px;
+        padding: 5px;
+        background-color: #ccc;
+        border-radius: 5px;
+        margin: 2px;
+    }
+    .primary-upload-container{
+        display: flex;
+        justify-content: center;
+        padding: 10px;
+        margin-top: 25px;
+    }
+    .upload-container{
+        border: 2px solid black;
+        box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
+        border-radius: 4px;
+    }
+
+    .upload-header{
+        text-align: center;
+        background-color: rgb(0, 99, 129);
+        color: white;
+    }
+    progress {
+appearance: none;
+height: 20px;
+border: none;
+background-color: #f0f0f0;
+border-radius: 4px;
+}
+
+progress::-webkit-progress-bar {
+background-color: #f0f0f0;
+border-radius: 4px;
+}
+
+progress::-webkit-progress-value {
+background-color: blue;
+border-radius: 4px;
+}
+.selected-div{
+display: flex;
+flex-wrap: wrap;
+}
+.selected-div-container{
+display: flex;
+width: 90%;
+}

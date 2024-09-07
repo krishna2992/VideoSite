@@ -1,0 +1,94 @@
+label{
+    font-size: medium;
+    margin-bottom: 10px;
+}
+input{
+    border: 1px solid #ccc;
+}
+input[type="text"], input[type="select"]{
+    width: 90%;
+    padding: 5px 10px;
+    font-size: large;
+}
+select{
+    max-width: 100%; /* Ensures the select doesn't exceed the container's width */
+    width: 90%;
+    padding: 10px;
+    font-size: 15px;
+    background-color: white;
+    
+    
+}
+
+option{
+    padding: 10px;
+    background-color: white;
+}
+
+
+.form-group {
+position: relative;
+margin-bottom: 30px; /* Adjust spacing as needed */
+}
+
+
+#filterActors{
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+#filterTags{
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+
+/* Targeting the input element with type checkbox */
+input[type="checkbox"] {
+
+appearance: none;
+-webkit-appearance: none;
+-moz-appearance: none;
+border-radius: 10px;
+width: 20px;
+height: 20px;
+border: 1px solid #ccc; /* Border color */
+border-radius: 3px; /* Rounded corners */
+background-color: #fff; /* Background color */
+cursor: pointer; /* Change cursor to pointer */
+/* Optional: Add margin or padding for spacing */
+margin-right: 5px;
+border: 3px solid black;
+}
+
+input[type="checkbox"]:checked {
+background-color: #007bff; 
+border-color: #007bff; 
+
+}
+
+
+/* Optional: Style the label associated with the checkbox */
+label.checkbox-label {
+/* Add styles to the label */
+font-size: 16px; /* Example: Increase font size */
+color: #333; /* Example: Change text color */
+}
+
+.selected-actors p, .selected-tags p{
+padding: 5px;
+background-color: #ccc;
+margin: 1px;
+border-radius: 5px;
+}
+
+@media (max-width: 600px) {
+.upload-container{
+  width: 100%; /* Set the width for desktop */
+}
+}
+@media (min-width: 600px) {
+.upload-container{
+  width: 70%; /* Set the width for desktop */
+}
+}
