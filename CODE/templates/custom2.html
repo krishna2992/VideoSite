@@ -1,0 +1,196 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<script>
+    var data = {
+        'item':{{ serialized_data|safe }},
+        'items':{{ items_serializers| safe }}
+    };
+    data.item['is_Full'] = JSON.parse(data.item['isFull'])
+</script>
+<div class="page-wrapper">
+    
+    <div class="container-add-wrapper" style="display: flex;">
+        <div>
+        <div class="container">
+            <div  class="content">
+                <div class="video-name">
+                    <div style="display: flex;justify-content: space-between;">
+                        <div style="overflow-y: scroll;margin-right: 15px;">
+                            <h3  id="item-name"></h3>
+                        </div>
+                        <div>
+                            <button  onclick="addToFavorites()" id="favButton" class="add-favourite">
+                                {% if fav %}
+                                    Remove From Fav
+                                {% else %}
+                                    Add to Fav
+                                {% endif %}                                
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id='tagContainer' class="tags-container">
+                        <div id="channelContainer" class="tag"></div>
+                    </div>
+                </div>
+            </div>
+            <style>
+                .add-container{
+                    padding: 4px;
+                }
+                #playButton img{
+                    width: 70px;
+                    height:70px;
+                    border-radius: 50%;
+                }
+                @media  (max-width: 600px) {
+                    .primary-add-container{
+                        flex-direction: column;
+                        
+                    }
+                    .add-container{
+                        margin: 10px 0px;
+                    }
+                    #playButton img{
+                        width: 40px;
+                        height: 40px;
+                    }
+                    
+                }
+                #customMenu{
+                    display: none;
+                    position: absolute;
+                    padding: 10px 5px;
+                    border-radius: 7px;
+                    background-color: rgb(46, 43, 43);
+                    z-index: 100;
+                    color: white;
+                    font-size: 15px;
+                    min-width: 150px;
+
+                }
+                #customMenu div, #customMenu a{
+                    padding: 4px;
+                    text-decoration: none;
+                    color: white;
+                    border-radius: 5px;
+                    margin: 3px;
+                }
+                #customMenu div:hover{
+                    background-color: #1d1b1b;
+                }
+            </style>
+            <div class="primary-container">
+                <div id="customMenu">
+                    <div class="customMenuElement"><a href="#">Option 1</a></div>
+                    <div class="customMenuElement"><a href="#">Option 2</a></div>
+                    <div class="customMenuElement"><a href="#">Option 3</a></div>
+                </div>
+                
+                <div class="video-container" id="video-container" >
+                    <video  controlsList="nodownload"  class="video" id="video" preload="metadata" ></video>
+                    <div id="playButton" style="padding: 0;border-radius: 50%;" onclick="playVideo()">
+                        <img src="{% static 'images/play_.jpeg' %}" />
+                    </div>
+                
+                    <select  id="resolutionSelect" >
+                    </select>
+                </div>
+        
+                
+    
+        <div class="social-box">
+            <div>
+                <div class="social-box-item"   >
+                    <img  src="{% static 'images/views.svg'%}"><h2 id="item-views" ></h2></img>
+                </div>
+            </div>
+        
+            <div>
+                <div  class="social-box-item" id="commentButton"  >
+                    <img  src="{% static 'images/comment_.png'%}" /><h2 id="commentCount"></h2></img>
+                </div>
+            </div>
+        
+            <div>
+                <div class="social-box-item" id="shareButton" >
+                    <img  src="{% static 'images/share.svg' %}"/><h2>Share</h2></img>
+                </div>
+            </div>  
+            <div>
+                <div id="downloadButton"  class="social-box-item"  >
+                    <img  src="{% static 'images/download.svg'%}"/><h2>Download</h2></img>
+                </div>
+            </div>
+            {% if user.is_authenticated %}
+                <script src="{% static 'js/download.js' %}"></script>
+            {% else %}
+                <script src="{% static 'js/download2.js' %}"></script> 
+            {% endif %}
+        </div>
+            </div>
+        </div>
+        </div>
+      <script src="{% static 'js/player.js' %}"></script>
+      <div class="add-container" style="min-height: 100px;background-color: #ccc;flex: 1;"></div>
+    </div>
+      <div id="commentContainer" class="comment-container" >
+            <div data-page="1"  id="commentBox" class="comment-box"></div>
+            {% if user.is_authenticated %}
+            
+            <div id="postCommentDiv" >
+                <div style="width: 95%;">
+                    <textarea id="commentInput"  rows="3" ></textarea>
+                </div>
+                <div id="submitButton">
+                    <svg  xmlns="http://www.w3.org/2000/svg" width="24"  height="24" viewBox="0 0 24 24" fill="none" class="icon-lg" style="background-color: black;">
+                        <path fill="white" fill-rule="evenodd" d="M12 3a1 1 0 0 1 .707.293l7 7a1 1 0 0 1-1.414 1.414L13 6.414V20a1 1 0 1 1-2 0V6.414l-5.293 5.293a1 1 0 0 1-1.414-1.414l7-7A1 1 0 0 1 12 3" clip-rule="evenodd"></path>
+                    </svg>
+                </div>
+            </div>
+            
+            {% endif %}
+            
+            <div style="display: flex; justify-content: center;">
+            
+            <div class="comment-page-div" >
+                <div  id="prevPage" class="comment-navigator" >Prev</div>
+                <div  id="pageBoxContainer" data-length="{{ comm_pages }}" class="page-box-container">
+                </div>
+                <div  id="nextPage" class="comment-navigator" >Next</div>
+                <script src="{% static 'js/comments.js' %}"></script>
+                
+                
+            </div>
+            </div>
+        </div>
+    <div class="grid-main-container" id="gridMainContainer">
+        
+    </div>
+    <style>
+        .load-more{
+            padding: 10px;
+            background-color: red;
+            color: white;
+            font-weight: 500;
+            font-size: 15px;
+            border-radius: 5px;
+        }
+    </style>
+    <div style="display: flex;justify-content: center;">
+        <button data-current="1" data-pages="{{ num_pages }}" id="loadMore" class="load-more">Load More</button>
+    </div>
+    <style>
+        .add-div{
+            width: 100%;
+            background-color: #ccc;
+        }
+    </style>
+    <script src="{% static 'js/custom.js' %}"></script>
+    <script src="{% static 'js/social.js' %}"></script>
+</div>
+
+  {% endblock content %}

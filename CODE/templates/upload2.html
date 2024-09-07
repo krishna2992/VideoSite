@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% load static %}
+{% block content %}
+
+<style>
+
+</style>
+<div class="primary-upload-container" >
+<div class="upload-container">
+    <div class="upload-header">
+        <h2 style="padding: 5px 0px;">Upload Video</h2>
+    </div>
+    
+    <form id="uploadForm"  method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group" >
+            <label for="{{ form.name.id_for_label }}">Name</label><br>
+            {{ form.name }}
+        </div>
+
+        <div class="form-group">
+            <div style="display: none;" class="actors-multiple-select">
+                {{ form.actors }}
+            </div>
+            <div>
+                <div class="selected-div-container" style="display: flex;">
+                    <label >Actors</label>
+                    <div class="selected-div"  id="selectedActors"></div>
+                </div>
+                <div>
+                    <div class="filter-div" >
+                        {{ form.filter_actors }}
+                        <button class="create-button" id="actorCreateButton" ></button>
+                    </div>
+                </div>
+                {{ form.actors_select }}
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <div style="display: none;" class="tags-multiple-select">
+                {{ form.tags }}
+            </div>
+            <div>
+                <div class="selected-div-container" style="display: flex;">
+                    <label >Tags</label>
+                    <div class="selected-div"  id="selectedTags"></div>
+                </div>
+                <div>
+                    <div class="filter-div">
+                        {{ form.filter_tags }}
+                        <button class="create-button" id="tagCreateButton" ></button>
+                    </div>
+                </div>
+                {{ form.tags_select }}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.isFull.id_for_label }}">Full Video:
+            {{ form.isFull }}
+            </label>
+        </div>
+        
+        <div class="form-group">
+            <label for="{{ form.video.id_for_label }}">Video File:<br>
+            {{ form.video }}
+            </label>
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.thumb.id_for_label }}">Select Thumb File:(PNG, JPG, JPEG)<br>
+            {{ form.profile }}
+            </label>
+        </div>
+
+        <progress id="progressBar" value="0" max="100" style="width: 90%;margin: 15px;"></progress>
+        
+        <button id="uploadButton" class="submit-button"   type="submit">Upload</button>
+    </form>
+    <style>
+        
+    </style>
+    <script src="{% static 'js/upload.js' %}" ></script>
+    <script src="{% static 'js/upload2.js' %}"></script>
+</div>
+</div>
+{% endblock %}

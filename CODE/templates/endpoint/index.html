@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+<!-- {% load static %} -->
+{% block content %}
+<div class="page-wrapper">
+    <div>
+        <h2 id="type-header">
+        {% if header %}
+            {{ header }}</h2>
+        {% else %}
+            Top Videos
+        {% endif %}
+        </h2>
+    </div>
+    <script>
+        var headText = document.getElementById('type-header');
+        headText.innerText = capitalize(headText.innerText);
+    </script>
+<div class="grid-container" id="gridContainer" data-id="{{ uuid }}">
+</div>
+<script src="{% static 'js/preview.js' %}"></script>
+
+<script src="{% static 'js/values.js' %}"></script>
+<div class="page-navigator-container"> 
+    <div style="display: flex;justify-content: center;">
+        <div  id="prevItemsPage" class="page-navigator" >Prev</div>
+        <div  id="itempageBoxContainer" data-type="{{ type }}" data-page="1" data-length="{{ num_pages }}" class="item-page-box-container"></div>
+        <div  id="nextItemsPage" class="page-navigator" >Next</div> 
+    </div>
+    
+</div>
+<script src="{% static 'js/endpointNavigator.js' %}"></script>
+</div>
+{% endblock %}

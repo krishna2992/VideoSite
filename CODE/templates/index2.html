@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+<!-- {% load static %} -->
+{% block content %}
+<div class="page-wrapper">
+    <div>
+        {% if header %}
+            <h2>{{ header }}</h2>
+        {% else %}
+            <h2>Top Videos</h2>
+        {% endif %}
+    </div>
+<div class="grid-container" id="gridContainer">
+    
+    {% if items|length == 0 %}
+                <p style="margin-left: 25px;">No Videos available.</p>
+    {% else %}
+    {% for item in items %}
+    <a style="text-decoration: none;" href="/video/{{ item.uuid }}/{{ item.name }}" class="video-link" data-source="{{ item.thumb.url }}">
+        <div   class="grid-item-container">
+            <div class="grid-item" >
+                {% if item.profile_picture %}
+                    <img style="border-radius: 10px;" src="{{ item.profile_picture.url }}" alt="Item 1">
+                {% else %}
+                    <img style="border-radius: 10px;" src="{% static 'images/image1.jpg' %}" alt="Item 1">
+                {% endif %}
+                {% if item.isFull %}
+                    <p  class="fullContainer">Full Video</p>
+                {% endif %}
+                <p data-seconds="{{ item.duration }}" class="timeDiv" style="right: 0;position: absolute;bottom: 0;font-weight: 600;background-color: beige;padding: 3px;margin: 5px;border-radius: 3px;font-size: small;"></p>
+                <div class="overlay">
+                    <video  muted loop class="video-preview" style="border-radius: 10px; display: none;"></video>
+                </div>
+            </div>
+        </div>
+        <div  class="info">
+            <div data-name="{{ item.name }}"  class="name"><p></p></div>
+            <div class="views-channel">
+                <div class="views" data-views="{{ item.views }}"></div>
+                <div class="grid-item-channel" >{{item.channel}}</div>
+            </div>
+        </div>
+    </a>
+{% endfor %}
+<script src="{% static 'js/preview.js' %}"></script>
+        
+{% endif %}
+    
+</div>
+
+
+<script src="{% static 'js/values.js' %}"></script>
+<div class="page-navigator-container"> 
+    <div style="display: flex;justify-content: center;">
+        <div  id="prevItemsPage" class="page-navigator" >Prev</div>
+        <div  id="itempageBoxContainer" data-page="{{ page }}" data-length="{{ num_pages }}" class="item-page-box-container"></div>
+        <div  id="nextItemsPage" class="page-navigator" >Next</div> 
+    </div>
+    <script src="{% static 'js/pageNavigator.js' %}"></script>
+</div>
+</div>
+{% endblock %}

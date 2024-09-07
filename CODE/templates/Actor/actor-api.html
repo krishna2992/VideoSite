@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% load custom_filters %}
+{% load static %}
+{% block content %}
+<div class="page-wrapper">
+<div  style="margin: 5px;">
+    {% if actor %}
+    <div style="display: flex;">
+        <div class="actor-image">
+            <img style="height: 125px;padding: 3px 10px;" src="{% static 'images/person.svg' %}" alt="Actor"/>
+        </div>
+        <div>
+            <h2 id="actName" style="margin-right: 25px;" data-name="{{ actor.name }}"></h2>
+            <script>
+                var actName = document.getElementById('actName');
+                actName.textContent = capitalize(actName.getAttribute('data-name'))+' Videos';
+            </script>
+            <p style="font-size: medium;" class="views" data-views="{{ actor.views }}"></p>
+            <p>Ratings: {{ actor.ratings }} Stars</p>
+            {% if not suscribed %}
+                <button id="subscribe-btn" class="suscribe-button" >Suscribe</button>
+            {% else %}
+                <button id="subscribe-btn" class="unsuscribe-button" >Unsuscribe</button>
+            {% endif  %}
+            <script>
+                var subscribeBtn = document.getElementById('subscribe-btn');
+                subscribeBtn.addEventListener('click', function() {
+
+                    {% if not user.is_authenticated %}
+                        window.location = `/user/login?next=${window.location.pathname + window.location.search + window.location.hash}`
+                    {% else %}
+                        
+                        var channelID = "{{ actor.id }}";  // Replace with actual channel ID
+                        var xhr = new XMLHttpRequest();
+                        var channelName= "{{ actor.name }}";
+                        xhr.open('POST', '/api/subscribe/actor/' + channelID + '/'+channelName);
+                        xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
+                        
+                        xhr.onload = function() {
+                            if (xhr.status === 201) 
+                            {
+                                
+                                subscribeBtn.innerHTML = 'Unsuscribe';
+                                subscribeBtn.className = 'unsuscribe-button';
+                                
+                            } 
+                            else if(xhr.status === 204)
+                            {
+                                subscribeBtn.textContent = 'Suscribe';
+                                subscribeBtn.className = 'suscribe-button';
+                                
+                            }
+                        };
+    
+                    xhr.onerror = function() {
+                        alert('Error: Request failed.');
+                    };
+                    
+                    xhr.send();
+                    
+                    {% endif %}
+            });
+            </script>
+        </div>
+    </div>
+    {% endif %}
+</div>
+<div class="grid-container" id="gridContainer" data-id="{{ uuid }}">
+</div>
+<script src="{% static 'js/values.js' %}"></script>
+<div class="page-navigator-container"> 
+    <div style="display: flex;justify-content: center;">
+        <div  id="prevItemsPage" class="page-navigator" >Prev</div>
+        <div  id="itempageBoxContainer" data-type="{{ type }}" data-page="1" data-length="{{ num_pages }}" class="item-page-box-container"></div>
+        <div  id="nextItemsPage" class="page-navigator" >Next</div> 
+    </div>
+    
+</div>
+<script src="{% static 'js/endpointNavigator.js' %}"></script>
+</div>
+{% endblock %}

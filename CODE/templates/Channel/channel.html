@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="page-wrapper">
+<div style="margin: 5px;">
+    <style>
+        
+    </style>
+    {% if channel %}
+    <div style="display: flex;">
+        <div  class="actor-image">
+            {% if channel.profile_picture %}
+                <img class="channel-image"  src="{{ channel.profile_picture.url }}" alt="Actor"/>
+            {% else %}
+                <img class="channel-image"  src="{% static 'images/person.svg' %}" alt="Actor"/>
+            {% endif %}
+        </div>
+        <div>
+            <h2 id="channel-name" data-name="{{ channel.name }}" style="margin-right: 25px;"></h2>
+            
+            <p style="font-size: medium;" id="channel-views" class="views" data-views="{{ channel.views }}"></p>
+            <script>
+                var itemName = document.getElementById('channel-name');
+                
+                var value = itemName.getAttribute('data-name');
+                itemName.innerText = capitalize(value)+ ' Videos';
+
+                
+            </script>
+            <p>Ratings: {{ channel.ratings }} Stars</p>
+            {% if not suscribed %}
+                <button id="subscribe-btn" class="suscribe-button" >Suscribe</button>
+            {% else %}
+                <button id="subscribe-btn" class="unsuscribe-button">Unsuscribe</button>
+            {% endif  %}
+                <script>
+                    var subscribeBtn = document.getElementById('subscribe-btn');
+                    subscribeBtn.addEventListener('click', function() {
+                        
+                        {% if not user.is_authenticated %}
+                            window.location = `/user/login?next=${window.location.pathname + window.location.search + window.location.hash}`
+                        {% else %}
+                        
+                        var channelID = "{{ channel.id }}";  // Replace with actual channel ID
+                        var xhr = new XMLHttpRequest();
+                        var channelName= "{{ channel.name }}";
+                        xhr.open('POST', '/api/subscribe/channel/' + channelID + '/'+channelName);
+                        xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
+                        
+                        xhr.onload = function() {
+                            if (xhr.status === 201) 
+                            {
+                                
+                                subscribeBtn.textContent = 'Unsuscribe';
+                                subscribeBtn.className = 'unsuscribe-button';
+                            } 
+                            else if(xhr.status === 204)
+                            {
+                                subscribeBtn.textContent = 'Suscribe';
+                                subscribeBtn.className = 'suscribe-button';
+                            }
+                        };
+    
+                    xhr.onerror = function() {
+                        alert('Error: Request failed.');
+                    };
+                    
+                    xhr.send();
+                    
+                    {% endif %}
+                });
+                </script>
+            
+            
+            
+        </div>
+    </div>
+    {% endif %}
+</div>
+<div class="grid-container" id="gridContainer">
+    
+    {% if items|length == 0 %}
+                <p style="margin-left: 25px;">No Videos available.</p>
+    {% else %}
+    {% for item in items %}
+    <a style="text-decoration: none;" href="/video/{{ item.uuid }}/{{ item.name }}" class="video-link" data-source="{{ item.thumb.url }}">
+        <div   class="grid-item-container">
+            <div class="grid-item" data-name="Item 1" data-views="100">
+                <img style="border-radius: 10px;" src="{{ item.profile_picture.url }}" alt="Item 1">
+                {% if item.isFull %}
+                    <p  class="fullContainer">Full Video</p>
+                {% endif %}
+                <p data-seconds="{{ item.duration }}" class="timeDiv" style="right: 0;position: absolute;bottom: 0;font-weight: 600;background-color: beige;padding: 3px;margin: 5px;border-radius: 3px;font-size: small;"></p>
+                <div class="overlay">
+                    <video  muted loop class="video-preview" style="border-radius: 10px; display: none;"></video>
+                </div>
+            </div>
+        </div>
+        <div  class="info">
+            <div data-name="{{ item.name }}"  class="name"><p></p></div>
+            <div class="views-channel">
+                <div class="views" data-views="{{ item.views }}"></div>
+                
+            </div>
+        </div>
+    </a>
+    
+    {% endfor %}
+    <script src="{% static 'js/preview.js' %}"></script>
+    {% endif %}
+    
+</div>
+
+<script src="{% static 'js/values.js' %}"></script>
+{% if items|length != 0 %}
+<div class="page-navigator-container"> 
+    <div style="display: flex;justify-content: center;">
+        <div  id="prevItemsPage" class="page-navigator" >Prev</div>
+        <div  id="itempageBoxContainer" data-page="{{ page }}" data-length="{{ num_pages }}" class="item-page-box-container"></div>
+        <div  id="nextItemsPage" class="page-navigator" >Next</div> 
+    </div>
+    <script src="{% static 'js/pageNavigator.js' %}"></script>
+</div>
+
+{% endif %}
+
+
+</div>
+{% endblock %}

@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+  .login-container {
+    width: 100%;
+    height: 100vh; /* Full height */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #3498db; /* Beautiful blue background color */
+  }
+  .login-box {
+    background-color: #ffffff; /* White background for the login box */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Soft shadow effect */
+    width: 300px;
+    text-align: center;
+  }
+  .login-box h2 {
+    margin-bottom: 20px;
+    color: #333333; /* Dark grey text color */
+  }
+  .login-box input[type="text"],
+  .login-box input[type="password"] {
+    width: calc(100% - 40px);
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #cccccc; /* Light grey border */
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+  .login-box input[type="submit"] {
+    width: calc(100% - 40px);
+    padding: 10px;
+    background-color: #3498db; /* Blue submit button */
+    color: #ffffff; /* White text color */
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  .login-box input[type="submit"]:hover {
+    background-color: #2980b9; /* Darker blue on hover */
+  }
+  .login-box select {
+    width: calc(100% - 40px);
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #cccccc; /* Light grey border */
+    border-radius: 4px;
+    box-sizing: border-box;
+    position: relative;
+  }
+  label{
+    text-align: start;
+  }
+  .alert{
+    color: red;
+    font-size: 12px;
+  }
+  .label-div{
+    width: 100%;text-align: start;
+    margin-left: 25px;
+  }
+</style>
+<div class="login-container">
+  <div class="login-box" style="width: 100%;max-width: 400px;">
+    <form  method="post">
+      {% csrf_token %}
+      <!-- <input type="text" name="username" placeholder="Username" required>
+      <br>
+      <input id="password" type="password" name="password" placeholder="Password" required>
+      <br> -->
+      {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {% for error in form.non_field_errors %}
+                    {{ error }}
+                {% endfor %}
+            </div>
+      {% endif %}
+        <div class="login-form-group">
+            <div class="label-div" >
+              <label>Username</label>
+            </div>
+            {{ form.username }}
+            {% if form.username.errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.username.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        <div class="login-form-group">
+            <div class="label-div" >
+              <label>Password</label>
+            </div>
+            {{ form.password }}
+            {% if form.password.errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.password.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+      <script>
+        
+      </script>
+      <div class="login-form-group">
+        <div style="text-align: start;margin-left: 20px;font-size: 15px;">
+          <input style="width: 15px;height: 15px;"  type="checkbox" onclick="myFunction()">Show Password 
+        </div>
+      </div>
+      <div class="login-form-group">
+        <div>
+          <label style="font-size: small;" for="login_type">Login As</label>
+        </div>
+        <select id="login_type" name="login_type">
+          <option value="user">User</option>
+          <option value="channel">Channel</option>
+        </select>
+      </div>
+      
+      <div style="text-align: end;width: calc(100% - 20px);margin: 10px 3px;">
+        <p><a class="signup-a"  href="/password_reset/">Forgot Password </a></p>
+      </div>
+      <input type="submit" value="Login">
+
+    </form>
+    <div style="display: flex;">
+      <style>
+        
+      </style>
+      <div style="margin: 6px;">
+        <p><a class="signup-a" href="/user/signup">Sign Up </a>to create an account</p>
+      </div>
+      
+    </div>
+  </div>
+  
+</div>
+{% endblock %}

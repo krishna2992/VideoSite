@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="page-wrapper">
+<div class="page-header" >
+    <h2 >All Channels</h2>
+</div>
+<div class="grid-container" id="gridContainer">
+    
+    {% if items|length == 0 %}
+                <p style="margin-left: 25px;">No Channels available.</p>
+    {% else %}
+    {% for item in items %}
+    <a style="text-decoration: none;" href="/channel/{{ item.name }}" class="video-link" data-source="">
+        <div   class="grid-item-container" >
+            <div class="grid-item">
+                {% if item.profile_picture %}
+                    <img   src="{{ item.profile_picture.url }}" alt="Actor"/>
+                {% else %}
+                    <img   src="{% static 'images/person.svg' %}" alt="Actor"/>
+                {% endif %}
+                <div class="overlay">
+                    <video  muted loop class="video-preview" style="border-radius: 10px; display: none;"></video>
+                </div>
+            </div>
+        </div>
+        <div  class="info">
+            <div data-name="{{ item.name }}"  class="name"><p></p></div>
+            <div class="views-channel">
+                <div class="views" data-views="{{ item.views }}"></div>
+            </div>
+        </div>
+    </a>
+    
+    {% endfor %}
+    <script src="{% static 'js/preview.js' %}"></script>
+    {% endif %}
+    
+</div>
+
+
+<div class="page-navigator-container"> 
+    <div style="display: flex;justify-content: center;">
+        <div  id="prevItemsPage" class="page-navigator" >Prev</div>
+        <div  id="itempageBoxContainer" data-page="{{ page }}" data-length="{{ num_pages }}" class="item-page-box-container"></div>
+        <div  id="nextItemsPage" class="page-navigator" >Next</div> 
+    </div>
+    <script src="{% static 'js/pageNavigator.js' %}"></script>
+</div>
+
+</div>
+{% endblock %}

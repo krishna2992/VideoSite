@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="page-wrapper">
+    <div style="display: flex;">
+        <div class="actor-image">
+            <img style="height: 125px;padding: 3px 10px;" src="{% static 'images/person.svg' %}" alt="Actor"/>
+        </div>
+        
+        <div>
+            <table style="font-size: small;margin: 15px 0px;">
+                <tr>
+                    <th>Username</th>
+                    <td>{{ user.username }}</td>
+                </tr>
+                <tr>
+                    <th>Last Login</th>
+                    <td>{{ user.last_login }}</td>
+                </tr>
+                <tr>
+                    <th>Date Joined</th>
+                    <td>{{ user.date_joined }}</td>
+                </tr>
+            </table>
+            
+            <style>
+                .logout-button{
+                    
+                    padding: 5px;
+                    font-size: 13px;
+                    color:white;
+                    background-color: red;
+                    text-decoration: none;
+                    border-radius: 3px;
+                    font-weight: bold;
+                }
+                .logout-button:hover{
+                    transform: scale(1.1); 
+                }
+                .logout-container{
+                    padding: 5px;
+                    transition: transform 0.2s ease-out;
+                }
+                .logout-container:hover{
+                    transform: scale(1.1);
+                }
+            </style>
+            <div class="logout-container" style="margin: 10px 0px;">
+                <a class="logout-button" href="/user/logout">Logout</a>
+            </div>
+        </div>
+    </div>
+    <div class="upload-button-container">
+        <a href="/Upload/"  >Upload</button></a>
+    </div>
+<div>
+    <style>
+        .header-link{
+            display: inline-block;
+            text-decoration: none;
+            color: black;
+            transition: transform 0.2s  ease-out;
+            padding: 5px 10px;
+        }
+
+        .header-link:hover{
+            transform: scale(1.1);
+        }
+
+        .empty-grid{
+            font-size: 15px;
+            margin-left: 25px;
+        }
+        
+        
+
+    </style>
+    
+        
+            <h3>Favourites</h3>
+        
+    
+<div class="grid-container" id="gridContainer">
+    
+    {% if favourites|length == 0 %}
+                <p class="empty-grid" >No Favourite available.</p>
+    {% else %}
+    {% for item in favourites %}
+    <a style="text-decoration: none;" href="/video/{{ item.uuid }}/{{ item.name }}" class="video-link" data-source="{{ item.thumb.url }}">
+        <div   class="grid-item-container">
+            <div class="grid-item" >
+                <img style="border-radius: 10px;" src="{{ item.profile.url }}" alt="Item 1">
+                {% if item.isFull %}
+                    <p  class="fullContainer">Full Video</p>
+                {% endif %}
+                <p data-seconds="{{ item.duration }}" class="timeDiv" style="right: 0;position: absolute;bottom: 0;font-weight: 600;background-color: beige;padding: 3px;margin: 5px;border-radius: 3px;font-size: small;"></p>
+                <div class="overlay">
+                    <video  muted loop class="video-preview" style="border-radius: 10px; display: none;"></video>
+                </div>
+            </div>
+        </div>
+        <div  class="info">
+            <div data-name="{{ item.name }}"  class="name"><p></p></div>
+            <div class="views-channel">
+                <div class="views" data-views="{{ item.views }}"></div>
+                <div class="grid-item-channel" >{{item.channel}}</div>
+            </div>
+        </div>
+    </a>
+        {% endfor %}
+        
+    {% endif %}
+    
+</div>
+</div>
+
+<script src="{% static 'js/channel_add.js' %}"></script>
+<div class="suscribed-channels" >       
+    <h3>Suscribed Channels</h3></a>
+    <div class="grid-container channelContainer" id="gridContainer">
+    </div>
+</div>
+<script>
+        async function get_channels(){
+            const responce = await fetch('/api/channels/suscribed');
+            if(!responce.ok)
+            {
+                console.log(responce)
+                throw new Error('Network response was not ok');
+                return
+            }
+            const data = await responce.json();
+            return data;
+        }
+        
+        document.addEventListener('DOMContentLoaded', async function() {
+            var channelContainer = document.querySelector('.channelContainer');
+            var items = await get_channels();
+            if(items.length === 0)
+            {
+                channelContainer.innerHTML = '<p class="empty-grid" >No Channels Suscribed</p>';
+            }
+            items.forEach(channel=>{
+                var cus = new ChannelElement(channel);
+                channelContainer.append(cus);
+        })
+    })
+    
+</script>
+
+<script src="{% static 'js/preview.js' %}"></script>
+<script src="{% static 'js/values.js' %}"></script>
+</div>
+{% endblock %}

@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="page-wrapper">
+<div style="display: flex;justify-content: space-between;">
+    <style>
+        .channel-image{
+            height: 125px;
+            max-width: 150px;
+            padding: 3px 5px;
+            border-radius: 5px;
+        }
+    </style>
+    {% if channel %}
+    <div style="display: flex;">
+        <div class="actor-image">
+            {% if channel.profile_picture %}
+                <img class="channel-image"  src="{{ channel.profile_picture.url }}" alt="Actor"/>
+            {% else %}
+                <img class="channel-image"  src="{% static 'images/person.svg' %}" alt="Actor"/>
+            {% endif %}
+        </div>
+        <div>
+            <h2 id="channel-name" style="margin-right: 25px;">{{ channel.name  }} Videos</h2>
+            
+            <p style="font-size: medium;" id="views" class="views" data-views="{{ channel.views }}"></p>
+            <p>Ratings: {{ channel.ratings }} Stars</p>
+            <!-- <button class="suscribe-button" ><h2>Suscribe</h2></button> -->
+            <script>
+                var itemName = document.getElementById('channel-name');
+                
+                var value = itemName.getAttribute('data-name');
+                itemName.innerText = capitalize(value)+ ' Videos';
+
+                var itemViews = document.getElementById('views');
+                var value = parseInt(itemViews.getAttribute('data-views'));
+                itemViews.innerText = consolidated_views(value);    
+            </script>
+            <style>
+                .logout-button{
+                    
+                    padding: 5px;
+                    font-size: 13px;
+                    color:white;
+                    background-color: red;
+                    text-decoration: none;
+                    border-radius: 3px;
+                    font-weight: bold;
+                }
+                .logout-button:hover{
+                    transform: scale(1.1); 
+                }
+                .logout-container{
+                    padding: 5px;
+                    
+                }
+                
+            </style>
+            <div class="logout-container" style="margin: 10px 0px;">
+                <a class="logout-button" href="/user/logout">Logout</a>
+            </div>
+        </div>
+    </div>
+    <div>
+        <a href="/upload" style="font-weight:700;font-size: medium;padding: 10px;text-decoration: none;color: white;background-color: blue;border-radius: 10px;" >Upload</button></a>
+    </div>
+    {% endif %}
+</div>
+<div class="unattended-container">
+    {% if unattended|length != 0 %}
+        <div><h2>Unlisted Videos</h2></div>
+        <div class="grid-container" id="gridContainer">
+            {% for unitem in unattended %}
+                <div style="text-decoration: none;"   data-source="{% static 'images/output2.webm' %}">
+                    <div   class="grid-item-container">
+                        <div class="grid-item" data-name="Item 1" data-views="100">
+                            <img style="border-radius: 10px;" src="{% static 'images/image1.jpg' %}" alt="Item 1">
+                            {% if unitem.isFull %}
+                                <p  class="fullContainer">Full Video</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div  class="info">
+                        <div data-name="{{ unitem.name }}"  class="name"><p></p></div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
+<div id="listedContainer" class="attended-container">
+{% if items|length == 0 %}
+    <p style="margin-left: 25px;">No Videos available.</p>
+{% else %}
+    <div><h2>Listed Videos</h2></div>
+<div class="grid-container" id="gridContainer">
+    {% for item in items %}
+    <a style="text-decoration: none;" href="/video/{{ item.uuid }}/{{ item.name }}" class="video-link" data-source="{% static 'images/output2.webm' %}">
+        <div   class="grid-item-container">
+            <div class="grid-item" data-name="Item 1" data-views="100">
+                <img style="border-radius: 10px;" src="{% static 'images/image1.jpg' %}" alt="Item 1">
+                {% if item.isFull %}
+                    <p  class="fullContainer">Full Video</p>
+                {% endif %}
+                <p data-seconds="{{ item.duration }}" class="timeDiv" style="right: 0;position: absolute;bottom: 0;font-weight: 600;background-color: beige;padding: 3px;margin: 5px;border-radius: 3px;font-size: small;"></p>
+                <div class="overlay">
+                    <video  muted loop class="video-preview" style="border-radius: 10px; display: none;"></video>
+                </div>
+            </div>
+        </div>
+        <div  class="info">
+            <div data-name="{{ item.name }}"  class="name"><p></p></div>
+            <div class="views-channel">
+                <div class="views" data-views="{{ item.views }}"></div>
+                <div class="grid-item-channel" >{{item.channel}}</div>
+            </div>
+        </div>
+    </a>
+    {% endfor %}
+    <script src="{% static 'js/preview.js' %}"></script>
+    {% endif %}
+    
+</div>
+</div>
+<script src="{% static 'js/values.js' %}"></script>
+</div>
+{% endblock %}

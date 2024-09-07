@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+<!-- {% load static %} -->
+{% block content %}
+<div class="page-wrapper">
+<div class="page-header" >
+    {% if tag %}
+        <h2 id="tagName" data-name="{{tag}}"></h2>
+        <script>
+            var tagName = document.getElementById('tagName');
+            tagName.textContent = capitalize(tagName.getAttribute('data-name'))+' Videos';
+
+        </script>
+    {% endif %}
+</div>
+<div class="grid-container" id="gridContainer" >
+    {% if items|length == 0 %}
+                <p style="margin-left: 25px;">No Videos available.</p>
+    {% else %}
+        {% for item in items %}
+            <a style="text-decoration: none;" href="/video/{{ item.uuid }}/{{ item.name }}" class="video-link" data-source="{% static 'images/output2.webm' %}">
+                <div   class="grid-item-container">
+                    <div class="grid-item" data-name="Item 1" data-views="100">
+                        <img style="border-radius: 10px;" src="{% static 'images/image1.jpg' %}" alt="Item 1">
+                        {% if item.isFull %}
+                            <p class="fullContainer" style="left: 0;position: absolute;top: 0;font-weight: 600;background-color: beige;padding: 3px;margin: 3px;border-radius: 5px;font-size: small;">Full Video</p>
+                        {% endif %}
+                        <p data-seconds="{{ item.duration }}" class="timeDiv" style="right: 0;position: absolute;bottom: 0;font-weight: 600;background-color: beige;padding: 3px;margin: 5px;border-radius: 3px;font-size: small;"></p>
+                        <div class="overlay">
+                            <video nodownload  muted loop class="video-preview" style="border-radius: 10px; display: none;"></video>
+                        </div>
+                    </div>
+                </div>
+                <div  class="info">
+                    <div data-name="{{ item.name }}"  class="name"><p></p></div>
+                    <div class="views-channel">
+                        <div class="views" data-views="{{ item.views }}"></div>
+                        <div class="grid-item-channel" >{{item.channel}}</div>
+                    </div>
+                </div>
+            </a>
+        {% endfor %}
+        <script src="{% static 'js/preview.js' %}"></script>
+        <script src="{% static 'js/values.js' %}"></script>
+    {% endif %}    
+</div>
+<div class="page-navigator-container"> 
+    <div style="display: flex;justify-content: center;">
+        <div  id="prevItemsPage" class="page-navigator" >Prev</div>
+        <div  id="itempageBoxContainer" data-page="{{ page }}" data-length="{{ num_pages }}" class="item-page-box-container"></div>
+        <div  id="nextItemsPage" class="page-navigator" >Next</div> 
+    </div>
+    <script src="{% static 'js/pageNavigator.js' %}"></script>
+</div>
+    
+</div>
+
+{% endblock %}

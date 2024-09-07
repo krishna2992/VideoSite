@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="page-wrapper">
+    <div style="display: flex;justify-content: space-between;">
+    <div style="display: flex;">
+        <div class="actor-image">
+            <img style="height: 125px;padding: 3px 10px;" src="{% static 'images/person.svg' %}" alt="Actor"/>
+        </div>
+        
+        <div>
+            <table style="font-size: small;margin: 15px 0px;text-align: left;">
+                <tr>
+                    <th>Username</th>
+                    <td>{{ user.username }}</td>
+                </tr>
+                <tr>
+                    <th>Last Login</th>
+                    <td>{{ user.last_login|date:"F j, Y" }}</td>
+                </tr>
+                <tr>
+                    <th>Date Joined</th>
+                    <td>{{ user.date_joined|date:"F j, Y" }}</td>
+                </tr>
+            </table>
+            
+            <style>
+                .logout-button{
+                    
+                    padding: 5px;
+                    font-size: 13px;
+                    color:white;
+                    background-color: red;
+                    text-decoration: none;
+                    border-radius: 3px;
+                    font-weight: bold;
+                }
+                .logout-button:hover{
+                    transform: scale(1.1); 
+                }
+                .logout-container{
+                    padding: 5px;
+                    transition: transform 0.2s ease-out;
+                }
+                .logout-container:hover{
+                    transform: scale(1.1);
+                }
+            </style>
+            <div class="logout-container" style="margin: 10px 0px;">
+                <a class="logout-button" href="/user/logout">Logout</a>
+            </div>
+        </div>
+    </div>
+    <div class="upload-button-container">
+        <a href="/Upload/"  >Upload</button></a>
+    </div>
+    </div>
+<div>
+    <style>
+        .header-link{
+            display: inline-block;
+            text-decoration: none;
+            color: black;
+            transition: transform 0.2s  ease-out;
+            padding: 5px 10px;
+        }
+
+        .header-link:hover{
+            transform: scale(1.1);
+        }
+
+        .empty-grid{
+            font-size: 15px;
+            margin-left: 25px;
+        }
+        
+        
+
+    </style>
+    
+        
+            <h3>Favourites</h3>
+        
+    
+<div class="grid-container favoutiteContainer"  id="gridContainer"  >
+</div>
+<script>
+    
+    document.addEventListener('DOMContentLoaded', async function() {
+        var favouriteContainer = document.querySelector('.favoutiteContainer');
+            var items = await get_favourites();
+            
+            if(items.length === 0)
+            {
+                favouriteContainer.innerHTML = '<p class="empty-grid" >No Favourite Videos</p>';
+            }
+            items.forEach(item=>{
+                var cus = new NewVideoElement(item);
+                favouriteContainer.append(cus);
+        })
+    })
+</script>
+</div>
+<div class="suscribed-channels" >       
+    <h3>Suscribed Channels</h3></a>
+    <div class="grid-container channelContainer" id="gridContainer">
+    </div>
+</div>
+<script>
+        async function get_channels(){
+            const responce = await fetch('/api/channels/suscribed');
+            if(!responce.ok)
+            {
+                console.log(responce)
+                throw new Error('Network response was not ok');
+                return
+            }
+            const data = await responce.json();
+            return data;
+        }
+        
+        document.addEventListener('DOMContentLoaded', async function() {
+            var channelContainer = document.querySelector('.channelContainer');
+            var items = await get_channels();
+            if(items.length === 0)
+            {
+                channelContainer.innerHTML = '<p class="empty-grid" >No Channels Suscribed</p>';
+            }
+            items.forEach(channel=>{
+                var cus = new ChannelElement(channel);
+                channelContainer.append(cus);
+        })
+    })
+    
+</script>
+<div id="listedContainer" class="attended-container">
+
+    <div><h2>Listed Videos</h2></div>
+    <div class="grid-container listed" id="gridContainer">    
+    </div>
+</div>
+<script src="{% static 'js/values.js' %}"></script>
+<div class="page-navigator-container"> 
+    <div style="display: flex;justify-content: center;">
+        <div  id="prevItemsPage" class="page-navigator" >Prev</div>
+        <div  id="itempageBoxContainer" data-page="{{ page }}" data-length="{{ num_pages }}" class="item-page-box-container"></div>
+        <div  id="nextItemsPage" class="page-navigator" >Next</div> 
+    </div>
+    <script src="{% static 'js/listed_items.js' %}"></script>
+</div>
+<script>
+    var listedContainer = document.querySelector('.listed');
+    (async function() {        
+        var items = await get_listed(1, 'inline');
+        addToGrid(items, listedContainer);
+        if(items.length === 0)
+        {
+            document.querySelector('.page-navigator-container').style.display='none';
+        }
+    })();
+</script>
+
+<script src="{% static 'js/preview.js' %}"></script>
+<script src="{% static 'js/values.js' %}"></script>
+</div>
+{% endblock %}

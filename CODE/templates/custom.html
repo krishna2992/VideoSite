@@ -1,0 +1,430 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<script>
+    var data = {{ serialized_data|safe }};
+    data['is_Full'] = JSON.parse(data['is_Full'])
+</script>
+<div class="page-wrapper">
+    
+    <div class="container-add-wrapper" style="display: flex;">
+        <div>
+        <div class="container">
+            <div  class="content">
+                <div class="video-name">
+                    <div style="display: flex;justify-content: space-between;">
+                        <div style="overflow-y: scroll;margin-right: 15px;">
+                            <h3 data-name="{{ item.name }}" id="item-name"></h3>
+                        </div>
+                        <div>
+                            
+                            
+                            
+                                <button  onclick="addToFavorites()" id="favButton" class="add-favourite">
+                                    {% if fav %}
+                                        Remove From Fav
+                                    {% else %}
+                                        Add to Fav
+                                    {% endif %}                                
+                                </button>
+                            <script>
+                                var favButton = document.getElementById('favButton');
+                                
+function addToFavorites() 
+{
+    
+    const apiUrl = '/api/favourite/video';
+
+    // Assuming you are authenticated and have CSRF token if required
+    const csrftoken = getCookie('csrftoken');  // Function to get CSRF token
+
+    fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken,
+        },
+        body: JSON.stringify({ video_id: {{ item.id }} }),
+    })
+    .then(response => {
+        if (!response.ok) {
+            if(response.status === 403)
+            {
+                window.location.href = `/user/login?next=${window.location.pathname + window.location.search + window.location.hash}`;    
+            }
+            
+        }
+        return response.status;
+    })
+    .then(data => {
+        if(data === 201)
+        {   favButton.textContent = 'Remove from Fav';
+            
+        }
+        else{
+            favButton.textContent= 'Add To Fav';
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+                                
+
+                            </script>
+                        </div>
+                    </div>
+                    
+                    <div class="tags-container">
+                        <div class="tag">
+                            <a  href="/channel/{{ item.channel.name }}" >
+                                {{ item.channel.name }}<span class="tag channel-views">{{ item.channel.subscribers_count }}</span>
+                            </a>
+                        </div>
+                        {% for actor in item.actors.all %}
+                            <a href="/actor/{{ actor.name }}" style="display: flex;" class="tag"><img style="height: 15px;" src="{% static 'images/person.svg' %}"/><p data-name="{{ actor.name }}" class="actor"></p></a>
+                        {% endfor %}
+                        {% for tag in item.tags.all %}
+                            <a href="/tag/{{ tag.name }}" data-tag="{{ tag.name }}" class="tag tags-tag">{{ tag.name }}</a>
+                        {% endfor %}
+                        <script>
+                            
+                            var tags = document.querySelectorAll('.tags-tag');
+                            tags.forEach(tag=>{
+                                tag.textContent = capitalize(tag.getAttribute('data-tag'));
+                            })
+                        
+                            var actors = document.querySelectorAll('.actor');
+                            actors.forEach(actor=>{
+                                var value = (actor.getAttribute('data-name'));
+                                actor.innerText = capitalize(value);
+                            })
+
+                            var channelViews = document.querySelector('.channel-views');
+                            channelViews.textContent = consolidated_views(Math.max(1020, channelViews.textContent));
+                        </script>
+                    </div>
+                </div>
+            </div>
+            <style>
+                .add-container{
+                    padding: 4px;
+                }
+                #playButton img{
+                    width: 70px;
+                    height:70px;
+                    border-radius: 50%;
+                }
+                @media  (max-width: 600px) {
+                    .primary-add-container{
+                        flex-direction: column;
+                        
+                    }
+                    .add-container{
+                        margin: 10px 0px;
+                    }
+                    #playButton img{
+                        width: 40px;
+                        height: 40px;
+                    }
+                    
+                }
+                #customMenu{
+                    display: none;
+                    position: absolute;
+                    padding: 10px 5px;
+                    border-radius: 7px;
+                    background-color: rgb(46, 43, 43);
+                    z-index: 100;
+                    color: white;
+                    font-size: 15px;
+                    min-width: 150px;
+
+                }
+                #customMenu div, #customMenu a{
+                    padding: 4px;
+                    text-decoration: none;
+                    color: white;
+                    border-radius: 5px;
+                    margin: 3px;
+                }
+                #customMenu div:hover{
+                    background-color: #1d1b1b;
+                }
+            </style>
+            <div class="primary-container">
+                <div id="customMenu">
+                        <div class="customMenuElement"><a href="#">Option 1</a></div>
+                        <div class="customMenuElement"><a href="#">Option 2</a></div>
+                        <div class="customMenuElement"><a href="#">Option 3</a></div>
+                </div>
+                <script>
+                    
+                </script>
+            <div data-name="{{ item.name }}" data-id="{{ item.uuid }}"  class="video-container" id="video-container" >
+                
+                <video  controlsList="nodownload"  class="video" id="video" preload="metadata" poster="{{ item.profile_picture.url }}">
+                </video>
+                <div id="playButton" style="padding: 0;border-radius: 50%;" onclick="playVideo()">
+                    <img src="{% static 'images/play_.jpeg' %}" />
+                </div>
+                <style>
+                    #resolutionSelect{
+                        font-size: small;
+                        max-width: 60px;
+                        border: 1px solid black;
+                        border-radius: 3px;
+                    }
+
+                </style>
+                
+                <select  id="resolutionSelect" >
+                {% if item.resolutions %}
+                    {% for resolution in item.resolutions.all %}
+                        <option value="{{ resolution.video.url }}">{{ resolution.resolution }}</option>
+                    {% endfor %}
+                {% endif %}
+                </select>
+                <script src="{% static 'js/player.js' %}"></script>
+            </div>
+        
+
+    
+        <div class="social-box">
+        <style>
+            .social-box-item{
+                transition: transform 0.3s ease;
+            }
+        </style>
+        <div>
+            <div class="social-box-item"  data-post-id="25" >
+                <img  src="{% static 'images/views.svg'%}"><h2 id="item-views" data-views="{{ item.views }}">130K</h2></img>
+            </div>
+        </div>
+        
+        <div>
+            <div data-item-id="{{ item.id }}" class="social-box-item" id="commentButton"  >
+                <img  src="{% static 'images/comment_.png'%}" data-post-id="25"/><h2 id="commentCount">{{ item.num_comments }} </h2></img>
+            </div>
+        </div>
+        
+        <div>
+            <div class="social-box-item" id="shareButton"  >
+                <img  src="{% static 'images/share.svg' %}"/><h2>Share</h2></img>
+            </div>
+        </div>
+        <div>
+            <div id="downloadButton"  class="social-box-item"  >
+                <img  src="{% static 'images/download.svg'%}"/><h2>Download</h2></img>
+            </div>
+        </div>
+        {% if user.is_authenticated %}
+        <script src="{% static 'js/download.js' %}"></script>
+        {% else %}
+        <script src="{% static 'js/download2.js' %}"></script> 
+        {% endif %}
+    </div>
+            </div>
+        </div>
+      </div>
+      <div class="add-container" style="min-height: 100px;background-color: #ccc;flex: 1;"></div>
+        
+    </div>
+      <div id="commentContainer" class="comment-container" >
+            <div data-page="1"  id="commentBox" class="comment-box">
+            </div>
+            {% if user.is_authenticated %}
+            
+            <div id="postCommentDiv" >
+                
+                <div style="width: 95%;">
+                    <textarea id="commentInput"  rows="3" ></textarea>
+                </div>
+                
+                <div id="submitButton">
+                    <svg  xmlns="http://www.w3.org/2000/svg" width="24"  height="24" viewBox="0 0 24 24" fill="none" class="icon-lg" style="background-color: black;">
+                        <path fill="white" fill-rule="evenodd" d="M12 3a1 1 0 0 1 .707.293l7 7a1 1 0 0 1-1.414 1.414L13 6.414V20a1 1 0 1 1-2 0V6.414l-5.293 5.293a1 1 0 0 1-1.414-1.414l7-7A1 1 0 0 1 12 3" clip-rule="evenodd"></path>
+                    </svg>
+                </div>
+            </div>
+            <script>
+                var submitButton = document.getElementById('submitButton');
+                const inputElement = document.getElementById('commentInput');
+                submitButton.addEventListener('click', async function(){
+                    const content = inputElement.value;
+                    if(!content || content === '')
+                    {
+                        alert('Empty Comment');
+                        return;
+                    }
+                    await submitComment(content);
+                    inputElement.value = '';
+                })
+            </script>
+            {% endif %}
+            <style>
+                
+            </style>
+            <div style="display: flex; justify-content: center;">
+            
+            <div class="comment-page-div" >
+                <div  id="prevPage" class="comment-navigator" >Prev</div>
+                <div  id="pageBoxContainer" data-length="{{ comm_pages }}" class="page-box-container">
+                </div>
+                <div  id="nextPage" class="comment-navigator" >Next</div>
+                <script src="{% static 'js/comments.js' %}"></script>
+                <script>
+                    var boxContainer = document.getElementById('pageBoxContainer');
+                    const l = parseInt(boxContainer.getAttribute('data-length'));
+                    if(l!==1)
+                    {
+                        var minimum = l<5?l:5;
+                        for(var i= 0; i < minimum; i++)
+                        {
+                            var div = document.createElement('div');
+                            div.className = 'page-num';
+                            div.innerText = i+1;
+                            div.setAttribute('data-page', i+1);
+                            div.addEventListener('click', function(){
+                            comment_page(parseInt(this.getAttribute('data-page')));
+                            })
+                            boxContainer.appendChild(div);
+                        }
+                    
+                    }
+                    else{
+                        document.getElementById('prevPage').style.display = 'none';
+                        document.getElementById('nextPage').style.display = 'none';
+                    }
+                    
+                </script>
+                
+            </div>
+            </div>
+        </div>
+    <div class="grid-main-container" id="gridMainContainer">
+      <div class="grid-container" id="gridContainer" >
+    
+        {% if items|length == 0 %}
+                    <p style="margin-left: 25px;">No Videos available.</p>
+        {% else %}
+            {% for item in items %}
+                <a style="text-decoration: none;" href="/video/{{ item.uuid }}/{{ item.name }}" class="video-link" data-source="{{ item.thumb.url }}">
+                    <div   class="grid-item-container">
+                        <div class="grid-item"  >
+                            <img  src="{{ item.profile_picture.url }}" alt="Item 1">
+                            {% if item.isFull %}
+                                <p  class="fullContainer">Full Video</p>
+                            {% endif %}
+                            <p data-seconds="{{ item.duration }}" class="timeDiv" style="right: 0;position: absolute;bottom: 0;font-weight: 600;background-color: beige;padding: 3px;margin: 5px;border-radius: 3px;font-size: small;"></p>
+                            <div class="overlay">
+                                <video  muted loop class="video-preview" style="border-radius: 10px; display: none;"></video>
+                            </div>
+                        </div>
+                    </div>
+                    <div  class="info">
+                        <div data-name="{{ item.name }}"  class="name"><p></p></div>
+                        <div class="views-channel">
+                            <div class="views" data-views="{{ item.views }}"></div>
+                            <div class="grid-item-channel" >{{item.channel.name}}</div>
+                        </div>
+                    </div>
+                </a>
+            {% endfor %}
+            
+        {% endif %}
+        <script src="{% static 'js/preview.js' %}"></script>
+            <script src="{% static 'js/values.js' %}"></script>
+            <script src="{% static 'js/helper.js' %}"></script>
+            <script>
+                var itemName = document.getElementById('item-name');
+                var value = itemName.getAttribute('data-name');
+                itemName.innerText = capitalize(value);
+                var itemViews = document.getElementById('item-views');
+                var value = parseInt(itemViews.getAttribute('data-views'));
+                itemViews.innerText = consolidated_views(value);
+            </script>
+    </div>
+    </div>
+    <style>
+        .load-more{
+            padding: 10px;
+            background-color: red;
+            color: white;
+            font-weight: 500;
+            font-size: 15px;
+            border-radius: 5px;
+        }
+    </style>
+    <div style="display: flex;justify-content: center;">
+        <button data-current="1" data-pages="{{ num_pages }}" id="loadMore" class="load-more">Load More</button>
+    </div>
+    <style>
+        .add-div{
+            width: 100%;
+            background-color: #ccc;
+        }
+    </style>
+    <script>
+        var gridMainContainer = document.getElementById('gridMainContainer');
+        var videocontainer = document.getElementById('video-container');
+        var loadButton = document.getElementById('loadMore');
+        async function get_more(page=2)
+        {
+            var uuid = videocontainer.getAttribute('data-id');
+            var name = videocontainer.getAttribute('data-name');
+            const items = await fetch(`/endpoint/related/${uuid}/${name}?page=${page}`)
+            return items.json();
+        }
+        async function loadMore()
+        {
+            
+            var div = document.createElement('div');
+            div.className = 'add-div';
+            div.innerText = 'Add Container';
+            gridMainContainer.append(div);
+            var items = await get_more(parseInt(loadButton.getAttribute('data-current'))+1);
+            console.log(items)
+            if(items.length!==0)
+            {
+                var div = document.createElement('div');
+                div.className = 'grid-container';
+                items.forEach(item=>{
+                    div.append(new NewVideoElement(item))
+                })
+                gridMainContainer.appendChild(div);
+            
+            }
+            
+        }
+        
+        
+        
+        
+        if(parseInt(loadButton.getAttribute('data-pages')) === 1)
+        {
+            loadButton.disabled= true;
+            loadButton.style.display= 'none';
+        }
+        else{
+            loadButton.addEventListener('click',  async function()
+            {
+                var current = parseInt(loadButton.getAttribute('data-current'));
+                var total = parseInt(loadButton.getAttribute('data-pages'));
+                await loadMore();
+                loadButton.setAttribute('data-current', current+1);
+                if(current+1 === 3)
+                {
+                    loadButton.disabled = true;
+                    loadButton.style.display = 'none';
+                }
+            })
+        }
+        
+    </script>
+    <script src="{% static 'js/social.js' %}"></script>
+</div>
+
+  {% endblock content %}

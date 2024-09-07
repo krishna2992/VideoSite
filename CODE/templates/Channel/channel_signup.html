@@ -1,0 +1,116 @@
+<!-- myapp/templates/signup.html -->
+{% extends 'base.html' %}
+
+{% load custom_filters %}
+{% load static %}
+
+{% block content %}
+
+    <style>
+        /* myapp/static/styles.css */
+
+
+.main-container{
+    background-color:#3498db;
+}
+.signup-container {
+    max-width: 500px;
+    margin: 50px auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    background-color: white;
+    border-radius: 5px;
+}
+
+#id_name{
+    border-radius: 3px;
+}
+
+label{
+    margin-bottom: 10px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    /* font-weight: bold; */
+    margin-bottom: 13px;
+    color: #050366;
+}
+
+form input[type="text"],
+form input[type="email"],
+form input[type="password"] {
+    width: 100%;
+    padding: 8px;
+    border:1px solid black;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+    border-radius: 5px;
+
+}
+.alert{
+    color: red;
+    font-size: 12px;
+  }
+.btn {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+
+.sign-form label{
+    margin-bottom: 10px;
+}
+.description{
+    font-size: large;
+    border: 1px solid black;
+    margin: 5px 0px;
+    width: 100%;
+    outline: none;
+    padding: 5px;
+    font-family: 'Courier New', Courier, monospace;
+    border-radius: 3px;
+}
+
+input[type='file']{
+    width: 100%;
+    padding: 4px;
+    border: 1.5px solid black;
+    border-radius: 3px;
+}
+
+button{
+    margin: 5px;
+    padding: 5px;
+}
+
+    </style>
+    <div class="signup-container">
+        <div style="text-align: center;">
+            <h2>Signup Form</h2>
+        </div>
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {% for error in form.non_field_errors %}
+                    {{ error }}
+                {% endfor %}
+            </div>
+        {% endif %}
+        <form  class="sign-form" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button class="btn" type="submit">Submit</button>
+        </form>
+    </div>
+{% endblock %}

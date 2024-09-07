@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="page-wrapper">
+<div style="display: flex;justify-content: space-between;">
+    {% if channel %}
+    <div style="display: flex;">
+        <div class="actor-image">
+            {% if channel.profile_picture %}
+                <img class="channel-image"  src="{{ channel.profile_picture.url }}" alt="Actor"/>
+            {% else %}
+                <img class="channel-image"  src="{% static 'images/person.svg' %}" alt="Actor"/>
+            {% endif %}
+        </div>
+        <div class="channel-info">
+            <h2 id="channel-name" data-name="{{ channel.name  }}" style="margin-right: 25px;"></h2>
+            
+            <p style="font-size: medium;" id="views" class="views" data-views="{{ channel.views }}"></p>
+            <p>Ratings: {{ channel.ratings }} Stars</p>
+            <!-- <button class="suscribe-button" ><h2>Suscribe</h2></button> -->
+            <script>
+                var itemName = document.getElementById('channel-name');
+                
+                var value = itemName.getAttribute('data-name');
+                itemName.innerText = capitalize(value)+ ' Videos';
+
+                var itemViews = document.getElementById('views');
+                var value = parseInt(itemViews.getAttribute('data-views'));
+                itemViews.innerText = consolidated_views(value);    
+            </script>
+            
+            </style>
+            <div class="logout-container" style="margin: 10px 0px;">
+                <a class="logout-button" href="/user/logout">Logout</a>
+            </div>
+        </div>
+    </div>
+    <div class="upload-button-container">
+        <a href="/Upload/"  >Upload</button></a>
+    </div>
+    {% endif %}
+</div>
+<!-- <script src="{% static 'js/channel_add.js' %}"></script> -->
+<div style="display: none;" class="unattended-container" id="unattendedContainer">
+    
+    <div><h2>Unlisted Videos</h2></div>
+    <div class="grid-container unattended" >
+    </div>
+<script>
+    
+    (async function() {
+        var unattendedContainer = document.querySelector('.unattended');
+        var unattended = await get_unattended();
+        unattended.forEach(ele=>{
+            var cus = new UnUploadedNewVideoElement(ele);
+            unattendedContainer.append(cus);
+        })
+        if(unattended.length !== 0)
+        {
+            document.getElementById('unattendedContainer').style.display = 'block';
+        }
+    })();
+
+</script>
+</div>
+<div id="listedContainer" class="attended-container">
+
+    <div><h2>Listed Videos</h2></div>
+    <div class="grid-container listed" id="gridContainer">    
+    </div>
+</div>
+<script src="{% static 'js/values.js' %}"></script>
+<div class="page-navigator-container"> 
+    <div style="display: flex;justify-content: center;">
+        <div  id="prevItemsPage" class="page-navigator" >Prev</div>
+        <div  id="itempageBoxContainer" data-page="{{ page }}" data-length="{{ num_pages }}" class="item-page-box-container"></div>
+        <div  id="nextItemsPage" class="page-navigator" >Next</div> 
+    </div>
+    <script src="{% static 'js/listed_items.js' %}"></script>
+</div>
+
+</div>
+{% endblock %}
